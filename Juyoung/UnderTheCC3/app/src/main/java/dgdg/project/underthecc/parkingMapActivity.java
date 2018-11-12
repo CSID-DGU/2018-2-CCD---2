@@ -41,20 +41,6 @@ public class parkingMapActivity extends AppCompatActivity implements OnMapReadyC
     Double longitude;
     Double latitude;
    //String placeName;
-    
-    public void onMapReady(final GoogleMap map) {
-        googleMap = map;
-
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            map.setMyLocationEnabled(true);
-        else
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQ_PERMISSION);
-
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-        Log.d(TAG, "구글맵 보이니");
-    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +57,24 @@ public class parkingMapActivity extends AppCompatActivity implements OnMapReadyC
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+    }
+    public void onMapReady(final GoogleMap map) {
+        googleMap = map;
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            map.setMyLocationEnabled(true);
+        else
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQ_PERMISSION);
+
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+        Log.d(TAG, "구글맵 보이니, searchPlace 호출");
+
         searchPlace(data);
+
         Log.d(TAG, "end searchPlace");
     }
 
@@ -115,15 +118,14 @@ public class parkingMapActivity extends AppCompatActivity implements OnMapReadyC
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         options.title("찾는 장소");
         Log.d(TAG, "updateMap1");
-       // currentMarker = googleMap.addMarker(options);
+        currentMarker = googleMap.addMarker(options);
 
         //mk.showInfoWindow();
         Log.d(TAG, "updateMap2");
 
-/*        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
         googleMap.moveCamera(cameraUpdate);
         Log.d(TAG, "updateMap3");
-*/
-    }
 
+    }
 }

@@ -1,26 +1,17 @@
 package dgdg.project.underthecc;
 
 import android.content.Intent;
-import android.location.Address;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.TextView;
-import android.widget.Button;
-import android.view.View;
-import android.view.View.OnClickListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class parkingActivity extends AppCompatActivity implements View.OnClickListener{
+public class parkingActivity extends AppCompatActivity {
     private WebView webView;
     private Handler handler;
 
-    Button button_result;
 
     String address;
 
@@ -28,8 +19,7 @@ public class parkingActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking);
-        button_result = (Button)findViewById(R.id.result);
-        button_result.setOnClickListener(this);
+
 
         // WebView 초기화
         init_webView();
@@ -60,19 +50,17 @@ public class parkingActivity extends AppCompatActivity implements View.OnClickLi
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    button_result.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
                     address = String.format("(%s) %s %s", arg1, arg2, arg3);
                     // WebView를 초기화 하지않으면 재사용할 수 없음
+                    nextActivity();
                     init_webView();
                 }
             });
         }
     }
 
-
-
-    public void onClick(View v) {
-        if (v == button_result) {
+    public void nextActivity() {
+        if (address != null) {
             Intent intent = new Intent(this, parkingMapActivity.class);
             intent.putExtra("address_value", address);
             startActivity(intent);
