@@ -1,4 +1,4 @@
-package dgdg.project.tester;
+package dgdg.project.kmap;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("dgdg.project.tester", appContext.getPackageName());
+        assertEquals("dgdg.project.kmap", appContext.getPackageName());
     }
 }

@@ -1,4 +1,4 @@
-package dgdg.project.tester;
+package dgdg.project.kmap;
 
 import org.junit.Test;
 
