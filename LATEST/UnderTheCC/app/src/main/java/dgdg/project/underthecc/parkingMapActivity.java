@@ -58,77 +58,9 @@ public class parkingMapActivity extends AppCompatActivity {
         tmap.setSKTMapApiKey(TMAP_API_KEY);
         RelativeLayoutTmap.addView(tmap);
         tmap.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
-        setGps();
-    }
-
-    public void setGps() {
-        final LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자(실내에선 NETWORK_PROVIDER 권장)
-                1000, // 통지사이의 최소 시간간격 (miliSecond)
-                1, // 통지사이의 최소 변경거리 (m)
-                mLocationListener);
-
+        //setGps();
         searchPlace(data);
     }
-
-    private final LocationListener mLocationListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-
-            if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-                tmap.setLocationPoint(longitude, latitude);
-                tmap.setCenterPoint(longitude, latitude);
-
-                TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
-
-                TMapCircle tMapCircle = new TMapCircle();
-                tMapCircle.setCenterPoint( tMapPoint );
-                tMapCircle.setRadius(200);
-                tMapCircle.setCircleWidth(2);
-                tMapCircle.setLineColor(Color.TRANSPARENT);
-                tMapCircle.setAreaColor(Color.RED);
-                tMapCircle.setAreaAlpha(100);
-                tmap.addTMapCircle("circle1", tMapCircle);
-
-                TMapData tMapData = new TMapData();
-                try {
-                    Log.d("TmapTest", ""+tMapPoint.getLatitude());
-                    Log.d("TmapTest", ""+tMapPoint.getLongitude());
-
-                    tMapData.convertGpsToAddress(tMapPoint.getLatitude(), tMapPoint.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
-
-                        @Override
-                        public void onConvertToGPSToAddress(String addr) {
-                            Log.d("TmapTest","*** updatePositionInfo - addr: "+addr);
-                            TextView textView;
-                            textView = findViewById(R.id.textView);
-                            textView.setText(addr);
-                        }
-                    });
-
-                } catch (Exception e) {
-                    Log.d("error", "*** Exception: "+e.getLocalizedMessage());
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void onProviderDisabled(String provider) {
-        }
-
-        public void onProviderEnabled(String provider) {
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-    };
-
 
     public void searchPlace(String place) {
         Geocoder geocoder = new Geocoder(this, Locale.KOREAN);
@@ -161,8 +93,20 @@ public class parkingMapActivity extends AppCompatActivity {
         String lon2 = String.valueOf(lon);
         String text = "현재 위도 경도 :" + lat2 + ", " + lon2;
         textView2.setText(text);
+        tmap.setLocationPoint(longitude, latitude);
+        tmap.setCenterPoint(longitude, latitude);
 
-        //cameraUpdate 관련 클래스 삭제했습니다
+        TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
+        TMapCircle tMapCircle = new TMapCircle();
+        tMapCircle.setCenterPoint( tMapPoint );
+        tMapCircle.setRadius(200);
+        tMapCircle.setCircleWidth(2);
+        tMapCircle.setLineColor(Color.TRANSPARENT);
+        tMapCircle.setAreaColor(Color.RED);
+        tMapCircle.setAreaAlpha(100);
+        tmap.addTMapCircle("circle1", tMapCircle);
+
+        //cameraUpdate 관련 클래스 삭제
 
     }
 }
