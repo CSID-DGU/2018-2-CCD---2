@@ -8,7 +8,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-public class parkingActivity extends AppCompatActivity {
+public class parkingActivity extends ABActivity {
     private WebView webView;
     private Handler handler;
 

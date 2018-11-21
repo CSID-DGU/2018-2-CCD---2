@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,17 +19,16 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapCircle;
@@ -37,7 +37,7 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 import java.util.logging.LogManager;
 
-public class gpsActivity extends AppCompatActivity {
+public class gpsActivity extends ABActivity {
 
     private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
     private TMapView tmap;
@@ -55,7 +55,9 @@ public class gpsActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps);
+
     }
+
 
     @Override
     protected void onStart() {
@@ -96,7 +98,7 @@ public class gpsActivity extends AppCompatActivity {
         if (!checkLocationServicesStatus()) { //위치서비스가 비활성화인 상태
             Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
             showDialogForLocationServiceSetting();
-        }else { //위치 서비스가 활성화인 상태
+        } else { //위치 서비스가 활성화인 상태
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -187,6 +189,7 @@ public class gpsActivity extends AppCompatActivity {
             }
         }
     }
+
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     @TargetApi(Build.VERSION_CODES.M)
     private void checkPermissions() {
@@ -272,7 +275,7 @@ public class gpsActivity extends AppCompatActivity {
 
     private void stopLocationUpdates() {
 
-        Log.d(TAG,"stopLocationUpdates : removeLocationUpdates");
+        Log.d(TAG, "stopLocationUpdates : removeLocationUpdates");
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(mLocationListener);
         mRequestingLocationUpdates = false;
@@ -292,7 +295,7 @@ public class gpsActivity extends AppCompatActivity {
                 TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
 
                 TMapCircle tMapCircle = new TMapCircle();
-                tMapCircle.setCenterPoint( tMapPoint );
+                tMapCircle.setCenterPoint(tMapPoint);
                 tMapCircle.setRadius(200);
                 tMapCircle.setCircleWidth(2);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
@@ -313,14 +316,20 @@ public class gpsActivity extends AppCompatActivity {
                     });
 
                 } catch (Exception e) {
-                    Log.d("error", "*** Exception: "+e.getLocalizedMessage());
+                    Log.d("error", "*** Exception: " + e.getLocalizedMessage());
                     e.printStackTrace();
                 }
             }
         }
 
-        public void onProviderDisabled(String provider) { }
-        public void onProviderEnabled(String provider) { }
-        public void onStatusChanged(String provider, int status, Bundle extras) { }
+        public void onProviderDisabled(String provider) {
+        }
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
     };
+
 }

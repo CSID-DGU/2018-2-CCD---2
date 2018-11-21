@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class parkingMapActivity extends AppCompatActivity {
+public class parkingMapActivity extends ABActivity {
     public String data;
     TextView textView;
     TextView textView2;
