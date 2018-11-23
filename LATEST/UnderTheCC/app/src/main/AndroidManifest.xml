@@ -13,10 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCDtBu4tahl8lU3q_Rm40J0IhA3QHGP4TU"/>
-
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -29,16 +25,19 @@
         <activity
             android:name=".gpsActivity"
             android:label="근처 CCTV 알아보기"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".parkingActivity"
             android:label="가까운 주차장 알아보기"
-            android:screenOrientation="portrait" ></activity>
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".parkingMapActivity"
             android:label="가까운 주차장 알아보기"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".ABActivity"></activity>
     </application>
 
 </manifest>

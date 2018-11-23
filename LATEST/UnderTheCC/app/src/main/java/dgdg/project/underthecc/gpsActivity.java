@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,26 +19,33 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.logging.LogManager;
 
-public class gpsActivity extends AppCompatActivity {
+public class gpsActivity extends ABActivity {
 
     private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
     private TMapView tmap;
@@ -55,7 +63,9 @@ public class gpsActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps);
+
     }
+
 
     @Override
     protected void onStart() {
@@ -65,7 +75,120 @@ public class gpsActivity extends AppCompatActivity {
         tmap.setSKTMapApiKey(TMAP_API_KEY);
         RelativeLayoutTmap.addView(tmap);
         tmap.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
-        //setGps();
+
+        Log.d(TAG, "onStart: xml 파싱준비");
+        String file="서울특별시_중구_CCTV_20181101.xml";
+        String result="";
+        final ArrayList PointWido = new ArrayList();
+        final ArrayList PointKyungdo = new ArrayList();
+
+        try {
+            InputStream is=getAssets().open(file);
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+            result=new String(buffer,"utf-8");
+
+            XmlPullParserFactory factory=XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true); //xml 네임스페이스 지원 여부 설정
+            XmlPullParser xpp=factory.newPullParser();
+            xpp.setInput(new StringReader(result));
+            int eventType=xpp.getEventType();
+
+            boolean bSet=false;
+            Log.d(TAG, "onStart: 위도값 받기 시작");
+            while(eventType!=XmlPullParser.END_DOCUMENT){
+                if(eventType== XmlPullParser.START_TAG){
+                    String tag_name=xpp.getName();
+                    if(tag_name.equals("위도"))
+                        bSet=true;
+                }else if(eventType==XmlPullParser.TEXT){
+                    if(bSet){
+                        String data = xpp.getText();
+                        boolean isPoint = false;
+                        for(int j=0; j<PointWido.size(); j++) {
+                            if (data.equals(PointWido.get(j))) {
+                                isPoint = true;
+                                break;
+                            }
+                        }
+                        if (!isPoint)
+                            PointWido.add(data);
+                    }
+                    bSet = false;
+
+                }else if(eventType==XmlPullParser.END_TAG);
+                eventType=xpp.next();
+            }
+            Log.d(TAG, "onStart: 위도값 받기 끝");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            InputStream is=getAssets().open(file);
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+            result = new String(buffer,"utf-8");
+
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true); //xml 네임스페이스 지원 여부 설정
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(result));
+            int eventType=xpp.getEventType();
+
+            boolean bSet = false;
+            Log.d(TAG, "onStart: 경도값 받기 시작");
+            while(eventType!=XmlPullParser.END_DOCUMENT){
+                if(eventType== XmlPullParser.START_TAG){
+                    String tag_name=xpp.getName();
+                    if(tag_name.equals("경도"))
+                        bSet=true;
+                }else if(eventType==XmlPullParser.TEXT){
+                    if(bSet){
+                        String data = xpp.getText();
+                        boolean isPoint = false;
+                        for(int j=0; j<PointKyungdo.size(); j++) {
+                            if (data.equals(PointKyungdo.get(j))) {
+                                isPoint = true;
+                                break;
+                            }
+                        }
+                        if (!isPoint)
+                            PointKyungdo.add(data);
+                    }
+                    bSet = false;
+
+                }else if(eventType==XmlPullParser.END_TAG);
+                eventType=xpp.next();
+            }
+            Log.d(TAG, "onStart: 경도값 받기 끝");
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        // 출력
+        Log.d(TAG, "onStart: 마커찍기...");
+        for(int i=0; i<PointWido.size(); i++){
+            TMapMarkerItem markerItem1 = new TMapMarkerItem();
+            // 마커의 좌표 지정
+            String wido = (String) PointWido.get(i);
+            String kyungdo = (String) PointKyungdo.get(i);
+            double dwido = Double.valueOf(wido);
+            double dkyungdo = Double.valueOf(kyungdo);
+            TMapPoint tmapPoint = new TMapPoint(dwido, dkyungdo);
+            markerItem1.setTMapPoint(tmapPoint);
+            //지도에 마커 추가
+            tmap.addMarkerItem("markerItem"+i, markerItem1);
+
+        }
         super.onStart();
     }
 
@@ -96,7 +219,7 @@ public class gpsActivity extends AppCompatActivity {
         if (!checkLocationServicesStatus()) { //위치서비스가 비활성화인 상태
             Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
             showDialogForLocationServiceSetting();
-        }else { //위치 서비스가 활성화인 상태
+        } else { //위치 서비스가 활성화인 상태
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -187,6 +310,7 @@ public class gpsActivity extends AppCompatActivity {
             }
         }
     }
+
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     @TargetApi(Build.VERSION_CODES.M)
     private void checkPermissions() {
@@ -272,7 +396,7 @@ public class gpsActivity extends AppCompatActivity {
 
     private void stopLocationUpdates() {
 
-        Log.d(TAG,"stopLocationUpdates : removeLocationUpdates");
+        Log.d(TAG, "stopLocationUpdates : removeLocationUpdates");
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(mLocationListener);
         mRequestingLocationUpdates = false;
@@ -292,7 +416,7 @@ public class gpsActivity extends AppCompatActivity {
                 TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
 
                 TMapCircle tMapCircle = new TMapCircle();
-                tMapCircle.setCenterPoint( tMapPoint );
+                tMapCircle.setCenterPoint(tMapPoint);
                 tMapCircle.setRadius(200);
                 tMapCircle.setCircleWidth(2);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
@@ -313,14 +437,20 @@ public class gpsActivity extends AppCompatActivity {
                     });
 
                 } catch (Exception e) {
-                    Log.d("error", "*** Exception: "+e.getLocalizedMessage());
+                    Log.d("error", "*** Exception: " + e.getLocalizedMessage());
                     e.printStackTrace();
                 }
             }
         }
 
-        public void onProviderDisabled(String provider) { }
-        public void onProviderEnabled(String provider) { }
-        public void onStatusChanged(String provider, int status, Bundle extras) { }
+        public void onProviderDisabled(String provider) {
+        }
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
     };
+
 }
