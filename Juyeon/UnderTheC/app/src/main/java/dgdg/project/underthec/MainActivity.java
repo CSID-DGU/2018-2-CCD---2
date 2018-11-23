@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView tv=(TextView)findViewById(R.id.data);
-        String file="서울특별시_중구_CCTV_20181101.xml";
+        String file="서울 CCTV.xml";
         String result="";
         try {
             InputStream is=getAssets().open(file);
