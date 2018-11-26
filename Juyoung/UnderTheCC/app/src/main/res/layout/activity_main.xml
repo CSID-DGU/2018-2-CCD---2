@@ -14,7 +14,7 @@
         android:layout_width="369dp"
         android:layout_height="308dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_marginRight="20dp"
         android:contentDescription="@string/description"
         android:src="@drawable/utc" />
@@ -25,12 +25,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="43dp"
+        android:layout_marginStart="35dp"
         android:layout_marginBottom="81dp"
         android:background="#00B8EF"
         android:contentDescription="@string/description"
         android:onClick="onClick"
-        app:srcCompat="@drawable/cctvb" />
+        app:srcCompat="@drawable/menu1" />
 
     <ImageButton
         android:id="@+id/imageButton2"
@@ -38,12 +38,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="45dp"
+        android:layout_marginEnd="35dp"
         android:layout_marginBottom="83dp"
         android:background="#00B8EF"
         android:contentDescription="@string/description"
         android:onClick="onClick"
-        app:srcCompat="@drawable/parkingb" />
+        app:srcCompat="@drawable/menu2" />
 
 
 </RelativeLayout>

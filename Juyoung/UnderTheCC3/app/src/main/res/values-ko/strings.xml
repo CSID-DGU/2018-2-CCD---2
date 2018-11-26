@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">UnderTheC</string>
-    <string name="description">이미지를 찾을 수 없습니다.</string>
-    <string name="textView">현재 위치 : </string>
-</resources>
