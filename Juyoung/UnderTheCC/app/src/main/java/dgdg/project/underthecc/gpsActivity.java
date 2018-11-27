@@ -63,7 +63,7 @@ public class gpsActivity extends ABActivity {
 
     ArrayList mPendingIntentList;
     String intentKey = "CCTVProximity";
-    String file="서울 CCTV.xml";
+    String file="서울특별시_중구_CCTV_20181101.xml";
     String result="";
     final ArrayList PointWido = new ArrayList();
     final ArrayList PointKyungdo = new ArrayList ();
@@ -77,17 +77,66 @@ public class gpsActivity extends ABActivity {
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: Tmap 생성");
+        Log.d(TAG, "onStart");
+
+        Log.d(TAG, "startLocationUpdates: Tmap 생성");
         RelativeLayout RelativeLayoutTmap = findViewById(R.id.map_view);
         tmap = new TMapView(this);
         tmap.setSKTMapApiKey(TMAP_API_KEY);
         RelativeLayoutTmap.addView(tmap);
         tmap.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
-
-        Log.d(TAG, "onStart: mapReady() 호출");
+        Log.d(TAG, "onStart: mapReady 호출");
         mapReady();
 
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        Log.d(TAG, "onResume : call startLocationUpdates");
+        if (!mRequestingLocationUpdates){
+            startLocationUpdates();
+        }
+
+
+        //앱 정보에서 퍼미션을 허가했는지를 다시 검사
+        if (askPermissionOnceAgain) {
+            Log.d(TAG, "onResume : 앱 정보에서 퍼미션 허가했는지 검사");
+
+            //사용자의 OS버전을 체크한다.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//사용자 기기의 sdk버전이 마쉬멜로우 버전보다 높다면
+                askPermissionOnceAgain = false;
+
+                Log.d(TAG, "onResume : checkPermissions 호출");
+                checkPermissions();
+            }
+        }
+    }
+
+    private void startLocationUpdates() {
+        Log.d(TAG, "startLocationUpdates : 퍼미션 확인");
+        if (!checkLocationServicesStatus()) { //위치서비스가 비활성화인 상태
+            Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
+            showDialogForLocationServiceSetting();
+        } else { //위치 서비스가 활성화인 상태
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                Log.d(TAG, "startLocationUpdates : 퍼미션 안가지고 있음");
+
+                return;
+            }
+
+            Log.d(TAG, "startLocationUpdates : 위치 업데이트 요청");
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자(실내에선 NETWORK_PROVIDER 권장)
+                    500, // 10초 : 통지사이의 최소 시간간격 (miliSecond)
+                    1, // 통지사이의 최소 변경거리 (m)
+                    mLocationListener);
+            mRequestingLocationUpdates = true;
+        }
     }
 
     public void mapReady() { //xml 파일 파싱 및 좌표들 인텐트에 저장
@@ -99,8 +148,13 @@ public class gpsActivity extends ABActivity {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mPendingIntentList = new ArrayList();
 
+        // 수신자 객체 생성하여 등록
+        Log.d(TAG, "mapReady : 근접 리스너 등록");
+        mIntentReceiver = new IntentReceiver(intentKey);
+        registerReceiver(mIntentReceiver, mIntentReceiver.getFilter());
+
         // 출력
-        Log.d(TAG, "mapReady: CCTV 위치 마커찍기 및 register 호출");
+        Log.d(TAG, "mapReady: CCTV 위치 마커찍기");
         for(int i=0; i<PointWido.size(); i++){
             TMapMarkerItem markerItem1 = new TMapMarkerItem();
             // 마커의 좌표 지정
@@ -112,15 +166,7 @@ public class gpsActivity extends ABActivity {
             markerItem1.setTMapPoint(tmapPoint);
             //지도에 마커 추가
             tmap.addMarkerItem("markerItem"+i, markerItem1);
-            //register(i,dwido, dkyungdo,100,-1);
         }
-
-        // 수신자 객체 생성하여 등록
-        mIntentReceiver = new IntentReceiver(intentKey);
-        registerReceiver(mIntentReceiver, mIntentReceiver.getFilter());
-
-        Toast.makeText(getApplicationContext(), "근접 리스너 등록", Toast.LENGTH_LONG).show();
-
         //checkDangerousPermissions();
     }
 
@@ -181,57 +227,19 @@ public class gpsActivity extends ABActivity {
         return pointList;
     }
 
-    @Override
-    public void onResume() {
-
-        super.onResume();
-
-        Log.d(TAG, "onResume : call startLocationUpdates");
-        if (!mRequestingLocationUpdates) startLocationUpdates();
-
-
-        //앱 정보에서 퍼미션을 허가했는지를 다시 검사
-        if (askPermissionOnceAgain) {
-
-            //사용자의 OS버전을 체크한다.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//사용자 기기의 sdk버전이 마쉬멜로우 버전보다 높다면
-                askPermissionOnceAgain = false;
-
-                checkPermissions();
-            }
-        }
-    }
-
-    private void startLocationUpdates() {
-
-        if (!checkLocationServicesStatus()) { //위치서비스가 비활성화인 상태
-            Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
-            showDialogForLocationServiceSetting();
-        } else { //위치 서비스가 활성화인 상태
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                Log.d(TAG, "startLocationUpdates : 퍼미션 안가지고 있음");
-                return;
-            }
-
-            Log.d(TAG, "startLocationUpdates : call setGps(위치 업데이트 요청)");
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자(실내에선 NETWORK_PROVIDER 권장)
-                    500, // 10초 : 통지사이의 최소 시간간격 (miliSecond)
-                    1, // 통지사이의 최소 변경거리 (m)
-                    mLocationListener);
-            mRequestingLocationUpdates = true;
-        }
-    }
-
     public boolean checkLocationServicesStatus() {
-        //GPS 수신 상태 확인 GPS가 켜져 있으면 true, 아니면 false 반환
-        return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        Log.d(TAG, "checkLocationServicesStatus");
+
+        boolean value = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        Log.d(TAG, "checkLocationServicesStatus : value = " + value);
+
+        //GPS 수신 상태 확인 : GPS가 켜져 있으면 true, 아니면 false 반환
+        return value;
     }
 
     private void showDialogForLocationServiceSetting() {
+        Log.d(TAG, "showDialogForLocationServiceSetting");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(gpsActivity.this);
         builder.setTitle("위치 서비스 비활성화");
@@ -261,6 +269,8 @@ public class gpsActivity extends ABActivity {
 
     @Override //파라미터로 넘어온 값이 정상적으로 넘어온 값인지를 판단해 현재 위치를 불러오는 로직 짬
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
+
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case GPS_ENABLE_REQUEST_CODE: //2001
@@ -275,8 +285,10 @@ public class gpsActivity extends ABActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int permsRequestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    @Override // 권한 요청의 결과를 받음
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult");
+
         if (permsRequestCode
                 == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION && grantResults.length > 0) {
 
@@ -284,6 +296,7 @@ public class gpsActivity extends ABActivity {
 
             if (permissionAccepted) {
             } else {
+                Log.d(TAG, "onRequestPermissionsResult : checkPermissions 호출");
                 checkPermissions();
             }
         }
@@ -298,21 +311,21 @@ public class gpsActivity extends ABActivity {
 
         if (hasFineLocationPermission == PackageManager
                 .PERMISSION_DENIED && fineLocationRationale)
-            showDialogForPermission("앱을 실행하려면 퍼미션을 허가하셔야합니다."); // 위치정보 동의 안하고
+            showDialogForPermission("앱을 실행하려면 퍼미션을 허가하셔야합니다.");
 
         else if (hasFineLocationPermission
                 == PackageManager.PERMISSION_DENIED && !fineLocationRationale) {
             showDialogForPermissionSetting("퍼미션 거부 + Don't ask again(다시 묻지 않음) " +
                     "체크 박스를 설정한 경우로 설정에서 퍼미션 허가해야합니다.");
         } else if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED) {
-
-
             Log.d(TAG, "checkPermissions : 퍼미션 가지고 있음");
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private void showDialogForPermission(String msg) {
+        Log.d(TAG, "showDialogForPermission");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(gpsActivity.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
@@ -324,7 +337,6 @@ public class gpsActivity extends ABActivity {
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
             }
         });
-
         builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 finish();
@@ -334,6 +346,8 @@ public class gpsActivity extends ABActivity {
     }
 
     private void showDialogForPermissionSetting(String msg) {
+        Log.d(TAG, "showDialogForPermissionSetting");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(gpsActivity.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
@@ -358,52 +372,10 @@ public class gpsActivity extends ABActivity {
         builder.create().show();
     }
 
-    private void checkDangerousPermissions() {
-        String[] permissions = {
-                Manifest.permission.ACCESS_FINE_LOCATION
-        };
 
-        int permissionCheck = PackageManager.PERMISSION_GRANTED;
-        for (int i = 0; i < permissions.length; i++) {
-            permissionCheck = ContextCompat.checkSelfPermission(this, permissions[i]);
-            if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-                break;
-            }
-        }
-
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-           //Toast.makeText(this, "권한 있음", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "권한 없음", Toast.LENGTH_LONG).show();
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-                Toast.makeText(this, "권한 설명 필요함.", Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(this, permissions, 1);
-            }
-        }
-    }
-
-    @Override
-    protected void onStop()
-    {
-        if (mRequestingLocationUpdates) {
-            Log.d(TAG, "onStop : call stopLocationUpdates");
-            stopLocationUpdates();
-        }
-        super.onStop();
-    }
-
-    private void stopLocationUpdates() {
-        Log.d(TAG, "stopLocationUpdates : removeLocationUpdates");
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationManager.removeUpdates(mLocationListener);
-        mRequestingLocationUpdates = false;
-    }
 
     private final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "onLocationChanged");
 
             if (location != null) {
                 double latitude = location.getLatitude();
@@ -411,18 +383,19 @@ public class gpsActivity extends ABActivity {
                 tmap.setLocationPoint(longitude, latitude);
                 tmap.setCenterPoint(longitude, latitude);
 
-
+                Log.d(TAG, "onLocationChanged : 현 위치 표시");
                 TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
 
                 TMapCircle tMapCircle = new TMapCircle();
                 tMapCircle.setCenterPoint(tMapPoint);
                 tMapCircle.setRadius(100);
-                //tMapCircle.setCircleWidth(2);
+                tMapCircle.setCircleWidth(0);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
                 tMapCircle.setAreaColor(Color.RED);
-                //tMapCircle.setAreaAlpha(100);
+                tMapCircle.setAreaAlpha(100);
                 tmap.addTMapCircle("circle1", tMapCircle);
 
+                Log.d(TAG, "onLocationChanged : geocoding");
                 TMapData tMapData = new TMapData();
                 try {
                     tMapData.convertGpsToAddress(tMapPoint.getLatitude(), tMapPoint.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
@@ -439,6 +412,17 @@ public class gpsActivity extends ABActivity {
                     e.printStackTrace();
                 }
             }
+
+            Log.d(TAG, "onLocationChanged : register 호출");
+            for(int i=0; i<PointWido.size(); i++){
+                // 좌표 인텐트로 지정
+                String wido = (String) PointWido.get(i);
+                String kyungdo = (String) PointKyungdo.get(i);
+                double dwido = Double.valueOf(wido);
+                double dkyungdo = Double.valueOf(kyungdo);
+                register(i,dwido, dkyungdo,100,-1);
+                Log.d(TAG, "onLocationChanged : register 등록 번호 " + i);
+            }
         }
 
         public void onProviderDisabled(String provider) { }
@@ -448,17 +432,25 @@ public class gpsActivity extends ABActivity {
 
     //register the proximity intent receiver
     private void register(int id, double latitude, double longitude, float radius, long expiration) {
+        Log.d(TAG, "register");
         Intent proximityIntent = new Intent(intentKey);
         proximityIntent.putExtra("id", id);
         proximityIntent.putExtra("latitude", latitude);
         proximityIntent.putExtra("longitude", longitude);
+
+        //아래 파라미터 설명 : this=PendingIntent를 부르려는 컨텍스트, id=원래는 requestcode로 쓰임,proximityIntent=앞으로 불려질 Intent,
+        //intentflags=intent에 대한 조건 설정 플래그 여기서는 이미 실행중인 PendingIntent가 있다면 이를 취소하고 새로 만드는 것.
         PendingIntent intent = PendingIntent.getBroadcast(this, id, proximityIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             Log.d(TAG, "register : 퍼미션 안가지고 있음");
+
             return;
         }
+        Log.d(TAG, "register 6");
+        // 목표지점 동록을 위해 addProximityAlert 메소드 이용
         mLocationManager.addProximityAlert(latitude, longitude, radius, expiration, intent);
         mPendingIntentList.add(intent);
     }
@@ -479,8 +471,7 @@ public class gpsActivity extends ABActivity {
             return filter;
         }
 
-
-        // 받았을 때 호출되는 메소드
+        // 원하는 조건에 맞으면 호출되는 메소드
         // @param content @param intent
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "IntentReceiver : onReceive");
@@ -492,14 +483,14 @@ public class gpsActivity extends ABActivity {
                 double latitude = intent.getDoubleExtra("latitude", 0.0D);
                 double longitude = intent.getDoubleExtra("longitude", 0.0D);
 
-                Toast.makeText(context, "근접한 CCTV : " + id + ", " + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "CCTV 단속 구역입니다. : " + id + ", " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
                 //진동 알림
-                Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-                vib.vibrate(1500);
+               // Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+                //vib.vibrate(1500);
                 //Beep 알림음
-                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                ringtone.play();
+                //Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+               // Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                //ringtone.play();
             }
         }
         public Intent getLastReceivedIntent() {
@@ -509,4 +500,21 @@ public class gpsActivity extends ABActivity {
             mLastReceivedIntent = null;
         }
     }
+
+    @Override
+    protected void onStop()
+    {
+        if (mRequestingLocationUpdates) {
+            Log.d(TAG, "onStop : call stopLocationUpdates");
+            stopLocationUpdates();
+        }
+        super.onStop();
+    }
+
+    private void stopLocationUpdates() {
+        Log.d(TAG, "stopLocationUpdates : removeLocationUpdates");
+        mLocationManager.removeUpdates(mLocationListener);
+        mRequestingLocationUpdates = false;
+    }
+
 }
