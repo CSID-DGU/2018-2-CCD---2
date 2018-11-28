@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "E:\\Github\\2018-2-CCD-DGDG-2\\Juyoung\\UnderTheCC3\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-port\\values-port.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\alice\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\eabbb2595c5b4c55346b3f89f01f78a3\\res\\values-port\\values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}
