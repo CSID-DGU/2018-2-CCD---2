@@ -57,29 +57,26 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2002;
     boolean askPermissionOnceAgain = false;
     boolean mRequestingLocationUpdates = false;
-
-    Button button_cctv;
-    Button button_parking;
+    boolean bcctv = false; //화면에 cctv 정보 나오지 않는 상태
+    boolean bparking = false; //화면에 주차장 정보 나오지 않는 상태
 
     private TMapView tmap;
     private LocationManager mLocationManager;
     private IntentReceiver mIntentReceiver;
     private AppCompatActivity mActivity;
 
-    boolean bcctv = false; //화면에 cctv 정보 나오지 않는 상태
-    boolean bparking = false; //화면에 주차장 정보 나오지 않는 상태
-
+    final ArrayList PointWido = new ArrayList();
+    final ArrayList PointKyungdo = new ArrayList ();
+    final ArrayList PointWido_p = new ArrayList();
+    final ArrayList PointKyungdo_p = new ArrayList();
 
     ArrayList mPendingIntentList;
     String intentKey = "CCTVProximity";
     String file="서울 CCTV.xml";
-    String result="";
-    final ArrayList PointWido = new ArrayList();
-    final ArrayList PointKyungdo = new ArrayList ();
-
     String file_p="서울특별시_주차장정보.xml";
-    final ArrayList PointWido_p = new ArrayList();
-    final ArrayList PointKyungdo_p = new ArrayList();
+    String result="";
+    Button button_cctv;
+    Button button_parking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,21 +100,21 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         mPendingIntentList = new ArrayList();
 
         // 수신자 객체 생성하여 등록
-        Log.d(TAG, "mapReady : 근접 리스너 등록");
+        Log.d(TAG, "onStart : 근접 리스너 등록");
         mIntentReceiver = new IntentReceiver(intentKey);
         registerReceiver(mIntentReceiver, mIntentReceiver.getFilter());
 
-        Log.d(TAG, "startLocationUpdates: Tmap 생성");
+        Log.d(TAG, "onStart: Tmap 생성");
         RelativeLayout RelativeLayoutTmap = findViewById(R.id.map_view);
         tmap = new TMapView(this);
         tmap.setSKTMapApiKey(TMAP_API_KEY);
         RelativeLayoutTmap.addView(tmap);
-        Log.d(TAG, "onStart: mapReady 호출");
 
-        xmlPassing(PointWido, 1); // xml에서 위도정보 배열에 저장
-        xmlPassing(PointKyungdo, 2); // xml에서 경도정보 배열에 저장
-        xmlPassing_p(PointWido_p,1);
-        xmlPassing_p(PointKyungdo_p,2);
+        Log.d(TAG, "onStart: xml 파일 파싱");
+        xmlPassing(PointWido, 1); // CCTV xml에서 위도정보 배열에 저장
+        xmlPassing(PointKyungdo, 2); // CCTV xml에서 경도정보 배열에 저장
+        xmlPassing_p(PointWido_p,1); // 주차장 xml에서 위도정보 배열에 저장
+        xmlPassing_p(PointKyungdo_p,2); // 주차장 xml에서 경도정보 배열에 저장
 
         super.onStart();
     }
@@ -127,10 +124,9 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         Log.d(TAG, "onClick: 버튼이 눌렸네요");
         if(v == button_cctv) {
             if(!bcctv){
-                Log.d(TAG, "onClick: cctv버튼, false");
+                Log.d(TAG, "onClick: cctv버튼, 화면에 보이게 하기");
                 bcctv = true;
 
-                Log.d(TAG, "mapReady: CCTV 위치 마커찍기");
                 for(int i=0; i<PointWido.size(); i++){
                     TMapMarkerItem markerItem1 = new TMapMarkerItem();
                     // 마커의 좌표 지정
@@ -147,10 +143,9 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
                     markerItem1.setCanShowCallout(true);
                     markerItem1.setCalloutTitle("위도 : " + wido + "경도 : " + kyungdo);
-                    Log.d(TAG, "onStart: CCTV 마커 찍기 완료");
                 }
             }else {
-                Log.d(TAG, "onClick: cctv버튼, true");
+                Log.d(TAG, "onClick: cctv버튼, 화면에 안보이게 하기");
 
                 bcctv = false;
                 for (int i = 0; i < PointWido.size(); i++) {
@@ -161,7 +156,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         }
         else if(v == button_parking) {
             if(!bparking){
-                Log.d(TAG, "onClick: parking버튼, false");
+                Log.d(TAG, "onClick: parking버튼, 화면에 보이게 하기");
                 bparking = true;
 
                 for(int i=0; i<PointWido_p.size(); i++){
@@ -179,10 +174,9 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                     tmap.addMarkerItem("markerItem_p"+i, markerItem_p);
                     markerItem_p.setCanShowCallout(true);
                     markerItem_p.setCalloutTitle("위도 : " + p_wido + "경도 : " + p_kyungdo);
-                    Log.d(TAG, "onStart: 주차장 마커 찍기 완료");
                 }
             }else{
-                Log.d(TAG, "onClick: parking버튼, true");
+                Log.d(TAG, "onClick: parking버튼, 화면에 안보이게 하기");
 
                 bparking = false;
                 for (int i = 0; i < PointWido_p.size(); i++) {
@@ -236,46 +230,20 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                     1, // 통지사이의 최소 변경거리 (m)
                     mLocationListener);
             mRequestingLocationUpdates = true;
+
+
+            Log.d(TAG, "startLocationUpdates : register 호출");
+            for(int i=0; i<30; i++){
+                // 좌표 인텐트로 지정
+                String wido = (String) PointWido.get(i);
+                String kyungdo = (String) PointKyungdo.get(i);
+                double dwido = Double.valueOf(wido);
+                double dkyungdo = Double.valueOf(kyungdo);
+                register(i,dwido, dkyungdo,600,-1);
+                Log.d(TAG, "startLocationUpdates : register 등록 번호 " + i);
+            }
         }
     }
-
-    /*public void mapReady() { //xml 파일 파싱 및 좌표들 인텐트에 저장
-        Log.d(TAG, "mapReady: xml 파싱 시작");
-        xmlPassing(PointWido, 1); // xml에서 위도정보 배열에 저장
-        xmlPassing(PointKyungdo, 2); // xml에서 경도정보 배열에 저장
-        xmlPassing_p(PointWido_p,1);
-        xmlPassing_p(PointKyungdo_p,2);
-
-        // 위치 관리자 객체 참조
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mPendingIntentList = new ArrayList();
-
-        // 수신자 객체 생성하여 등록
-        Log.d(TAG, "mapReady : 근접 리스너 등록");
-        mIntentReceiver = new IntentReceiver(intentKey);
-        registerReceiver(mIntentReceiver, mIntentReceiver.getFilter());
-
-        // 출력
-
-        for(int i=0; i<PointWido_p.size(); i++){
-            TMapMarkerItem markerItem_p = new TMapMarkerItem();
-            // 마커의 좌표 지정
-            String p_wido = (String) PointWido_p.get(i);
-            String p_kyungdo = (String) PointKyungdo_p.get(i);
-            double p_dwido = Double.valueOf(p_wido);
-            double p_dkyungdo = Double.valueOf(p_kyungdo);
-            TMapPoint p_tmapPoint = new TMapPoint(p_dwido, p_dkyungdo);
-            Bitmap icon_p = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
-            markerItem_p.setIcon(icon_p); // 마커 아이콘 지정
-            markerItem_p.setTMapPoint(p_tmapPoint);
-            //지도에 마커 추가
-            tmap.addMarkerItem("markerItem_p"+i, markerItem_p);
-            markerItem_p.setCanShowCallout(true);
-            markerItem_p.setCalloutTitle("위도 : " + p_wido + "경도 : " + p_kyungdo);
-            Log.d(TAG, "onStart: 주차장 마커 찍기 완료");
-        }
-        //checkDangerousPermissions();
-    }*/
 
     public ArrayList xmlPassing(ArrayList pointList, int number){
         Log.d(TAG, "xmlPassing: xml 파싱준비");
@@ -335,7 +303,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     }
 
     public ArrayList xmlPassing_p(ArrayList pointList, int number){
-        Log.d(TAG, "xmlPassing: xml 파싱준비");
+        Log.d(TAG, "xmlPassing_p: xml 파싱준비");
         try {
             InputStream is = getAssets().open(file_p);
             int size = is.available();
@@ -351,7 +319,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
             int eventType = xpp.getEventType();
 
             boolean bSet = false;
-            Log.d(TAG, "xmlPassing: 위도, 경도값 받기 시작");
+            Log.d(TAG, "xmlPassing_p: 위도, 경도값 받기 시작");
             while(eventType != XmlPullParser.END_DOCUMENT){
                 if(eventType == XmlPullParser.START_TAG){
                     String tag_name = xpp.getName();
@@ -383,7 +351,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 }else if(eventType==XmlPullParser.END_TAG);
                 eventType=xpp.next();
             }
-            Log.d(TAG, "xmlPassing: 위도, 경도값 받기 끝");
+            Log.d(TAG, "xmlPassing_p: 위도, 경도값 받기 끝");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -536,8 +504,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         builder.create().show();
     }
 
-
-
     private final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
 
@@ -552,13 +518,13 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
                 TMapCircle tMapCircle = new TMapCircle();
                 tMapCircle.setCenterPoint(tMapPoint);
-                tMapCircle.setRadius(600);
+                tMapCircle.setRadius(100);
                 tMapCircle.setCircleWidth(0);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
                 tMapCircle.setAreaColor(Color.RED);
-                tMapCircle.setAreaAlpha(100);
+                tMapCircle.setAreaAlpha(50);
                 tmap.addTMapCircle("circle1", tMapCircle);
-
+                tmap.setIconVisibility(true);
                 Log.d(TAG, "onLocationChanged : geocoding");
                 TMapData tMapData = new TMapData();
                 try {
@@ -575,17 +541,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-
-            Log.d(TAG, "onLocationChanged : register 호출");
-            for(int i=0; i<PointWido.size(); i++){
-                // 좌표 인텐트로 지정
-                String wido = (String) PointWido.get(i);
-                String kyungdo = (String) PointKyungdo.get(i);
-                double dwido = Double.valueOf(wido);
-                double dkyungdo = Double.valueOf(kyungdo);
-                register(i,dwido, dkyungdo,600,-1);
-                Log.d(TAG, "onLocationChanged : register 등록 번호 " + i);
             }
         }
 
@@ -680,5 +635,4 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         mLocationManager.removeUpdates(mLocationListener);
         mRequestingLocationUpdates = false;
     }
-
 }
