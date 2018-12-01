@@ -97,11 +97,11 @@ public class parkingMapActivity extends ABActivity {
         TMapPoint tMapPoint = new TMapPoint(latitude, longitude);
         TMapCircle tMapCircle = new TMapCircle();
         tMapCircle.setCenterPoint(tMapPoint);
-        tMapCircle.setRadius(100);
-        tMapCircle.setCircleWidth(0);
+        tMapCircle.setRadius(200);
+        tMapCircle.setCircleWidth(2);
         tMapCircle.setLineColor(Color.TRANSPARENT);
         tMapCircle.setAreaColor(Color.RED);
-        tMapCircle.setAreaAlpha(50);
+        tMapCircle.setAreaAlpha(100);
         tmap.addTMapCircle("circle1", tMapCircle);
     }
 
