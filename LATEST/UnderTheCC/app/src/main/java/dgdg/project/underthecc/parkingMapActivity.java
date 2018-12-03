@@ -49,7 +49,7 @@ public class parkingMapActivity extends ABActivity{
     private static final String TAG = "ParkingMapActivity";
 
     private TMapView tmap;
-    private TMapTapi tMapTapi;
+    TMapTapi tMapTapi;
     public String data;
     float x;
     float y;
@@ -182,15 +182,16 @@ public class parkingMapActivity extends ABActivity{
         final ArrayList PointKyungdo_p = new ArrayList();
         xmlPassing(PointWido_p, 1);
         xmlPassing(PointKyungdo_p, 2);
-
         // 출력
         Log.d(TAG, "onStart: 마커찍기...");
-
 
         tmap.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
             @Override
             public void onCalloutRightButton(TMapMarkerItem markerItem) {
                 Log.d(TAG, "모냐");
+                runTMapTapiT();
+                Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+                vib.vibrate(500);
             }
         });
 
@@ -225,9 +226,11 @@ public class parkingMapActivity extends ABActivity{
     }
 
     public void runTMapTapiT() {
-        tMapTapi = new TMapTapi(this);
-        tMapTapi.setSKTMapAuthentication(TMAP_API_KEY);
 
+        tMapTapi = new TMapTapi(this);
+        tMapTapi.invokeTmap();
+        //tMapTapi.setSKTMapAuthentication(TMAP_API_KEY);
+/*
         tMapTapi.setOnAuthenticationListener(new TMapTapi.OnAuthenticationListenerCallback() {
             @Override
             public void SKTMapApikeySucceed() {
@@ -244,6 +247,7 @@ public class parkingMapActivity extends ABActivity{
                         startActivity(intent);
                     }
                 } else {
+                    tMapTapi.invokeTmap();
                 }
             }
             @Override
@@ -251,19 +255,6 @@ public class parkingMapActivity extends ABActivity{
                 Log.d(TAG, "실패");
 
             }
-        });
+        });*/
     }
-
-/*
-    @Override
-    public void onCalloutRightButton(TMapMarkerItem markerItem) {
-        Log.d(TAG, "마커아이템 모야" + markerItem);
-        //Log.d(TAG, "실행되니");
-        /*if(markerItem == markerItem_p) {
-            runTMapTapiT();
-            tMapTapi.invokeSetLocation("name", x, y);
-        }
-        Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-        vib.vibrate(500);
-    }*/
 }

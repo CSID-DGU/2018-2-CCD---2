@@ -135,15 +135,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         }
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Log.d(TAG, "Handler : 로딩 끝");
-            loagingDialog.dismiss(); // 다이얼로그 삭제
-            // View갱신
-        }
-    };
-
     @Override
     protected void onStart() {
         Log.d(TAG, "onStart");
