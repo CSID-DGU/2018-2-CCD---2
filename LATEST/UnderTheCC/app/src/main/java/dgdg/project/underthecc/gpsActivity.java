@@ -61,7 +61,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     ArrayList mPendingIntentList;
     String intentKey = "CCTVProximity";
     String result="";
-    String cctvFile="서울 CCTV.xml";
+    String cctvFile="서울특별시_중구_CCTV_20181101.xml";
     String parkingFile="서울특별시_주차장정보.xml";
 
     private static final String TAG = "GpsActivity";
@@ -104,9 +104,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         Log.d(TAG, "onCreate : 쓰레드 테스트 시작");
         Background thread_b = new Background();
         thread_b.start();
-
-        //Log.d(TAG, "onCreate: 로딩 화면 시작");
-        //createThreadAndDialog();
     }
 
     class Background extends Thread {
@@ -125,34 +122,17 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
             xmlPassing(PointKyungdo_p,2, parkingFile); // 주차장 xml에서 경도정보 배열에 저장
 
             Log.d(TAG, "Background : register 호출");
-            register(0,37.5320387,126.85426389999998,150,-1);//본인 집주소로 테스트해보기
-            for(int i=1; i<20; i++){
+            for(int i=1; i<PointWido.size(); i++){
                 // 좌표 인텐트로 지정
                 String wido = (String) PointWido.get(i);
                 String kyungdo = (String) PointKyungdo.get(i);
                 double dwido = Double.valueOf(wido);
                 double dkyungdo = Double.valueOf(kyungdo);
-                register(i,dwido, dkyungdo,150,-1);
+                register(i,dwido, dkyungdo,600,-1);
                 Log.d(TAG, "Background: register 등록 번호 " + i);
             }
             super.run();
         }
-    }
-
-
-    void createThreadAndDialog() {
-        Log.d(TAG,"createThreadAndDialog : 로딩 테스트1");
-        // ProgressDialog
-        loagingDialog = ProgressDialog.show(this, "다이얼로그 명", "Loading.....", true, false);
-        Thread thread = new Thread(new Runnable() {
-            private static final int LOADING_TIME = 20000;
-            @Override
-            public void run() {
-                // 시간걸리는 처리
-                handler.sendEmptyMessageDelayed(0, LOADING_TIME);
-            }
-        });
-        thread.start();
     }
 
     private Handler handler = new Handler() {
@@ -260,7 +240,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                     tmap.addMarkerItem("markerItem"+i, markerItem1);
 
                     markerItem1.setCanShowCallout(true);
-                    markerItem1.setCalloutTitle("위도 : " + wido + "경도 : " + kyungdo);
+                    markerItem1.setCalloutTitle(i + "   위도 : " + wido + "경도 : " + kyungdo);
                 }
 
             }else {
@@ -370,7 +350,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
                 TMapCircle tMapCircle = new TMapCircle();
                 tMapCircle.setCenterPoint(tMapPoint);
-                tMapCircle.setRadius(150);
+                tMapCircle.setRadius(600);
                 tMapCircle.setCircleWidth(0);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
                 tMapCircle.setAreaColor(Color.RED);
