@@ -36,7 +36,7 @@ public class parkingMapActivity extends ABActivity{
     private static final String TAG = "ParkingMapActivity";
 
     private TMapView tmap;
-    private TMapTapi tMapTapi;
+    TMapTapi tMapTapi;
     public String data;
     float x;
     float y;
@@ -136,6 +136,14 @@ public class parkingMapActivity extends ABActivity{
                             if(tag_name.equals("경도") )
                                 bSet=true;
                             break;
+                        case 3:
+                            if(tag_name.equals("주차장명") )
+                                bSet=true;
+                            break;
+                        case 4:
+                            if(tag_name.equals("소재지지번주소") )
+                                bSet=true;
+                            break;
                     }
                 }else if(eventType==XmlPullParser.TEXT){
                     if(bSet){
@@ -167,45 +175,45 @@ public class parkingMapActivity extends ABActivity{
         Log.d(TAG, "onStart: xml 파싱준비");
         final ArrayList PointWido_p = new ArrayList();
         final ArrayList PointKyungdo_p = new ArrayList();
+        final ArrayList Name_p = new ArrayList();
+        final ArrayList Address_p = new ArrayList();
         xmlPassing(PointWido_p, 1);
         xmlPassing(PointKyungdo_p, 2);
-
-        // 출력
-        Log.d(TAG, "onStart: 마커찍기...");
+        xmlPassing(Name_p, 3);
+        xmlPassing(Address_p, 4);
 
 
         tmap.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
             @Override
             public void onCalloutRightButton(TMapMarkerItem markerItem) {
                 Log.d(TAG, "주차장 아이콘 클릭 : runTMapTapiT()");
+                x = (float)markerItem.latitude;
+                y = (float)markerItem.longitude;
                 runTMapTapiT();
+
+                Log.d(TAG, "x :   " + x + "   y :    " + y);
             }
         });
 
         for(int i=0; i<PointWido_p.size(); i++){
             markerItem_p = new TMapMarkerItem();
             // 마커의 좌표 지정
-            String p_wido = (String) PointWido_p.get(i);
-            String p_kyungdo = (String) PointKyungdo_p.get(i);
-            double p_dwido = Double.valueOf(p_wido);
-            double p_dkyungdo = Double.valueOf(p_kyungdo);
-            x = markerItem_p.getPositionX();
-            y = markerItem_p.getPositionY();
+            double p_dwido = Double.valueOf((String) PointWido_p.get(i));
+            double p_dkyungdo = Double.valueOf((String) PointKyungdo_p.get(i));
+            String p_name = (String)Name_p.get(i);
+            String p_address = (String)Address_p.get(i);
             TMapPoint p_tmapPoint = new TMapPoint(p_dwido, p_dkyungdo);
             Bitmap icon_p = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
             markerItem_p.setIcon(icon_p); // 마커 아이콘 지정
             markerItem_p.setTMapPoint(p_tmapPoint);
-            //지도에 마커 추가
             tmap.addMarkerItem("markerItem_p"+i, markerItem_p);
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.tmapicon);
 
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.tmapicon);
             markerItem_p.setCanShowCallout(true);
             markerItem_p.setCalloutRightButtonImage(bitmap);
-            markerItem_p.setCalloutTitle("가나다라마바사아자차카타파하");
-            markerItem_p.setCalloutSubTitle("가나다라마바사아자차카타파하");
-            markerItem_p.setCalloutLeftImage(bitmap);
-            Log.d(TAG, "onStart: 주차장 마커 찍기 완료");
-
+            markerItem_p.setCalloutTitle(p_name);
+            markerItem_p.setCalloutSubTitle(p_address);
+            //markerItem_p.setCalloutLeftImage(bitmap);
         }
         super.onStart();
     }
@@ -234,10 +242,7 @@ public class parkingMapActivity extends ABActivity{
             builder.create().show();
 
         }else {
-            //값 전달 수정 필요
-            tMapTapi.invokeRoute("뭐라할까", x, y);
-            Log.d(TAG, ""+tMapTapi.invokeSetLocation("뭐라할까", x, y) +x +y);
-
+            tMapTapi.invokeRoute("T타워", y, x);
         }
     }
 }
