@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,8 +56,8 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
     private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
 
-    Button button_cctv;
-    Button button_parking;
+    ImageButton button_cctv;
+    ImageButton button_parking;
 
     ArrayList mPendingIntentList;
     String intentKey = "CCTVProximity";
@@ -76,7 +77,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     private LocationManager mLocationManager;
     private IntentReceiver mIntentReceiver;
     private AppCompatActivity mActivity;
-    private ProgressDialog loagingDialog;// 로딩화면
 
     final ArrayList PointWido = new ArrayList();
     final ArrayList PointKyungdo = new ArrayList ();
@@ -95,8 +95,8 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mPendingIntentList = new ArrayList();
 
-        button_cctv = (Button)findViewById(R.id.cctvBu);
-        button_parking=(Button)findViewById(R.id.parkingBu);
+        button_cctv = (ImageButton)findViewById(R.id.cctvBu);
+        button_parking=(ImageButton)findViewById(R.id.parkingBu);
 
         button_cctv.setOnClickListener(this);
         button_parking.setOnClickListener(this);
@@ -341,7 +341,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
                 TMapCircle tMapCircle = new TMapCircle();
                 tMapCircle.setCenterPoint(tMapPoint);
-                tMapCircle.setRadius(600);
+                tMapCircle.setRadius(150);
                 tMapCircle.setCircleWidth(0);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
                 tMapCircle.setAreaColor(Color.RED);
@@ -425,8 +425,8 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 int id = intent.getIntExtra("id", 0);
                 double latitude = intent.getDoubleExtra("latitude", 0.0D);
                 double longitude = intent.getDoubleExtra("longitude", 0.0D);
-
-                Toast.makeText(context, "CCTV 단속 구역입니다. : " + id + ", " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "CCTV 단속 구역입니다." + id + ", " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "CCTV 단속 구역입니다. 차를 이동해주세요!", Toast.LENGTH_SHORT).show();
                 //진동 알림
                 Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
                 vib.vibrate(500);

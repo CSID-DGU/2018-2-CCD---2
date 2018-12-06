@@ -1,33 +1,20 @@
 package dgdg.project.underthecc;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.skt.Tmap.TMapCircle;
-import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapTapi;
@@ -47,13 +34,25 @@ public class parkingMapActivity extends ABActivity{
 
     private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
     private static final String TAG = "ParkingMapActivity";
+    final ArrayList PointWido_p = new ArrayList();
+    final ArrayList PointKyungdo_p = new ArrayList();
+    final ArrayList Name_p = new ArrayList();
+    final ArrayList Phone_p = new ArrayList();
+    final ArrayList parkingClass = new ArrayList();
+    final ArrayList feeInfo = new ArrayList();
+    final ArrayList date_p = new ArrayList();
+    final ArrayList fee = new ArrayList();
+    final ArrayList time_p = new ArrayList();
+    final ArrayList address = new ArrayList();
+
 
     private TMapView tmap;
-    TMapTapi tMapTapi;
     public String data;
     float x;
     float y;
+    int number;
 
+    TMapTapi tMapTapi;
     TMapMarkerItem markerItem_p;
     String result="";
     String file="서울특별시_주차장정보.xml";
@@ -70,7 +69,6 @@ public class parkingMapActivity extends ABActivity{
         data = intent.getStringExtra("address_value");
 
         textView = findViewById(R.id.textView);
-        textView.setText(data);
 
         RelativeLayout RelativeLayoutTmap = findViewById(R.id.mapview_p);
 
@@ -149,18 +147,42 @@ public class parkingMapActivity extends ABActivity{
                             if(tag_name.equals("경도") )
                                 bSet=true;
                             break;
+                        case 3:
+                            if(tag_name.equals("주차장명") )
+                                bSet=true;
+                            break;
+                        case 4:
+                            if(tag_name.equals("전화번호") )
+                                bSet=true;
+                            break;
+                        case 5:
+                            if(tag_name.equals("주차장구분") )
+                                bSet=true;
+                            break;
+                        case 6:
+                            if(tag_name.equals("요금정보") )
+                                bSet=true;
+                            break;
+                        case 7:
+                            if(tag_name.equals("운영요일") )
+                                bSet=true;
+                            break;
+                        case 8:
+                            if(tag_name.equals("주차기본요금") )
+                                bSet=true;
+                            break;
+                        case 9:
+                            if(tag_name.equals("주차기본시간") )
+                                bSet=true;
+                            break;
+                        case 10:
+                            if(tag_name.equals("소재지도로명주소") )
+                                bSet=true;
+                            break;
                     }
                 }else if(eventType==XmlPullParser.TEXT){
                     if(bSet){
                         String data = xpp.getText();
-                        boolean isPoint = false;
-                        for(int j=0; j<pointList.size(); j++) {
-                            if (data.equals(pointList.get(j))) {
-                                isPoint = true;
-                                break;
-                            }
-                        }
-                        if (!isPoint)
                             pointList.add(data);
                     }
                     bSet = false;
@@ -178,83 +200,89 @@ public class parkingMapActivity extends ABActivity{
 
     protected void onStart() {
         Log.d(TAG, "onStart: xml 파싱준비");
-        final ArrayList PointWido_p = new ArrayList();
-        final ArrayList PointKyungdo_p = new ArrayList();
+
         xmlPassing(PointWido_p, 1);
         xmlPassing(PointKyungdo_p, 2);
-        // 출력
-        Log.d(TAG, "onStart: 마커찍기...");
+        xmlPassing(Name_p, 3);
+        xmlPassing(Phone_p, 4);
+        xmlPassing(parkingClass, 5);
+        xmlPassing(feeInfo, 6);
+        xmlPassing(date_p, 7);
+        xmlPassing(fee, 8);
+        xmlPassing(time_p, 9);
+        xmlPassing(address, 10);
+        Log.d(TAG, "" + PointWido_p.size() +"  "+ PointKyungdo_p.size() + "  "+ Name_p.size() + "  "+ Phone_p.size()+ "  "+ parkingClass.size()
+                + "  "+ feeInfo.size()+ "  "+ date_p.size()+ "  "+ date_p.size() +  "  "+ fee.size()+ "  "+ time_p.size()+ "  "+ address.size());
+
 
         tmap.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
             @Override
             public void onCalloutRightButton(TMapMarkerItem markerItem) {
-                Log.d(TAG, "모냐");
+                Log.d(TAG, "주차장 아이콘 클릭 : runTMapTapiT()");
+                x = (float)markerItem.latitude;
+                y = (float)markerItem.longitude;
+                for(int i =0; i<PointWido_p.size(); i++){
+                    String s = (String)PointWido_p.get(i);
+                    Float f = Float.parseFloat(s);
+                    if(x == f) {
+                        number = i;
+                        Log.d(TAG, "주차장 아이콘 클릭 : " + s + "   " + i + "   " + Name_p.get(i));
+                    }
+                }
+                textView.setText(Name_p.get(number) + "\n"+ Phone_p.get(number)+ "\n"+ parkingClass.get(number)
+                        + "\n"+ feeInfo.get(number)+ "\n"+ date_p.get(number)+ "\n"+ date_p.get(number) +  "\n"+ fee.get(number)+ "\n"+ time_p.size()+ "\n"+ address.get(number));
+
                 runTMapTapiT();
-                Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-                vib.vibrate(500);
             }
         });
 
         for(int i=0; i<PointWido_p.size(); i++){
             markerItem_p = new TMapMarkerItem();
-            // 마커의 좌표 지정
-            String p_wido = (String) PointWido_p.get(i);
-            String p_kyungdo = (String) PointKyungdo_p.get(i);
-            double p_dwido = Double.valueOf(p_wido);
-            double p_dkyungdo = Double.valueOf(p_kyungdo);
-            x = markerItem_p.getPositionX();
-            y = markerItem_p.getPositionY();
+            double p_dwido = Double.valueOf((String) PointWido_p.get(i));
+            double p_dkyungdo = Double.valueOf((String) PointKyungdo_p.get(i));
+            String p_name = (String)Name_p.get(i);
+            String p_address = (String)Phone_p.get(i);
             TMapPoint p_tmapPoint = new TMapPoint(p_dwido, p_dkyungdo);
             Bitmap icon_p = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
             markerItem_p.setIcon(icon_p); // 마커 아이콘 지정
             markerItem_p.setTMapPoint(p_tmapPoint);
-            //지도에 마커 추가
             tmap.addMarkerItem("markerItem_p"+i, markerItem_p);
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.tmapicon);
 
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.tmapicon);
             markerItem_p.setCanShowCallout(true);
             markerItem_p.setCalloutRightButtonImage(bitmap);
-            markerItem_p.setCalloutTitle("가나다라마바사아자차카타파하");
-            markerItem_p.setCalloutSubTitle("가나다라마바사아자차카타파하");
-            markerItem_p.setCalloutLeftImage(bitmap);
-
-            //onPressEvent(p_tmapPoint);
-            Log.d(TAG, "onStart: 주차장 마커 찍기 완료");
-
+            markerItem_p.setCalloutTitle(p_name);
+            markerItem_p.setCalloutSubTitle(p_address);
         }
         super.onStart();
     }
 
     public void runTMapTapiT() {
-
         tMapTapi = new TMapTapi(this);
-        tMapTapi.invokeTmap();
-        //tMapTapi.setSKTMapAuthentication(TMAP_API_KEY);
-/*
-        tMapTapi.setOnAuthenticationListener(new TMapTapi.OnAuthenticationListenerCallback() {
-            @Override
-            public void SKTMapApikeySucceed() {
-                Log.d(TAG, "성공");
 
-                boolean isTmapApp = tMapTapi.isTmapApplicationInstalled();
-                Log.d(TAG, "" + isTmapApp);
-                if (isTmapApp == false) {
-                    ArrayList<String> _ar = tMapTapi.getTMapDownUrl();
-                    Log.d(TAG, "" + _ar);
-                    if (_ar != null && _ar.size() > 0) {
-                        Log.d(TAG,"_ar.size() : "+ _ar.size());
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(_ar.get(0)));
-                        startActivity(intent);
-                    }
-                } else {
-                    tMapTapi.invokeTmap();
+        boolean isTmapApp = tMapTapi.isTmapApplicationInstalled();
+
+        if(!isTmapApp){
+            AlertDialog.Builder builder = new AlertDialog.Builder(parkingMapActivity.this);
+            builder.setTitle("알림");
+            builder.setMessage("Tmap 앱을 설치해주세요");
+            builder.setCancelable(false);
+            builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
                 }
-            }
-            @Override
-            public void SKTMapApikeyFailed(String s) {
-                Log.d(TAG, "실패");
+            });
+            builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    ArrayList<String> _ar = tMapTapi.getTMapDownUrl();
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(_ar.get(0)));
+                    startActivity(intent);
+                }
+            });
+            builder.create().show();
 
-            }
-        });*/
+        }else {
+            String naviName = (String)Name_p.get(number);
+            tMapTapi.invokeRoute(naviName, y, x);
+        }
     }
 }
