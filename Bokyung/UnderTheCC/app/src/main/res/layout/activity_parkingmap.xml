@@ -16,13 +16,102 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
-        <TextView
-            android:id="@+id/textView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center_horizontal"
-            android:textSize="20sp"/>
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView1"
+                    style="@style/CustomTextView" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/CustomTextView"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/CustomTextView" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    style="@style/CustomTextView"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/CustomTextView"/>
+
+                <TextView
+                    android:id="@+id/textView6"
+                    style="@style/CustomTextView"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView7"
+                    style="@style/CustomTextView"/>
+
+                <TextView
+                    android:id="@+id/textView8"
+                    style="@style/CustomTextView"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    style="@style/CustomTextView" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    style="@style/CustomTextView"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView11"
+                    style="@style/CustomTextView" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    style="@style/CustomTextView"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
 
     </ScrollView>
 

@@ -56,9 +56,21 @@ public class parkingMapActivity extends ABActivity{
     TMapMarkerItem markerItem_p;
     String result="";
     String file="서울특별시_주차장정보.xml";
-    TextView textView;
     Double longitude;
     Double latitude;
+
+    TextView textView1;
+    TextView textView2;
+    TextView textView3;
+    TextView textView4;
+    TextView textView5;
+    TextView textView6;
+    TextView textView7;
+    TextView textView8;
+    TextView textView9;
+    TextView textView10;
+    TextView textView11;
+    TextView textView12;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +80,18 @@ public class parkingMapActivity extends ABActivity{
         Intent intent = getIntent();
         data = intent.getStringExtra("address_value");
 
-        textView = findViewById(R.id.textView);
+        textView1 = findViewById(R.id.textView1);
+        textView2 = findViewById(R.id.textView2);
+        textView3 = findViewById(R.id.textView3);
+        textView4 = findViewById(R.id.textView4);
+        textView5 = findViewById(R.id.textView5);
+        textView6 = findViewById(R.id.textView6);
+        textView7 = findViewById(R.id.textView7);
+        textView8 = findViewById(R.id.textView8);
+        textView9 = findViewById(R.id.textView9);
+        textView10 = findViewById(R.id.textView10);
+        textView11 = findViewById(R.id.textView11);
+        textView12 = findViewById(R.id.textView12);
 
         RelativeLayout RelativeLayoutTmap = findViewById(R.id.mapview_p);
 
@@ -229,8 +252,18 @@ public class parkingMapActivity extends ABActivity{
                         Log.d(TAG, "주차장 아이콘 클릭 : " + s + "   " + i + "   " + Name_p.get(i));
                     }
                 }
-                textView.setText(Name_p.get(number) + "\n"+ Phone_p.get(number)+ "\n"+ parkingClass.get(number)
-                        + "\n"+ feeInfo.get(number)+ "\n"+ date_p.get(number)+ "\n"+ date_p.get(number) +  "\n"+ fee.get(number)+ "\n"+ time_p.size()+ "\n"+ address.get(number));
+                textView1.setText("주차장구분");
+                textView2.setText((CharSequence) parkingClass.get(number));
+                textView3.setText("요금정보");
+                textView4.setText((CharSequence)feeInfo.get(number));
+                textView5.setText("운영요일");
+                textView6.setText((CharSequence)date_p.get(number));
+                textView7.setText("주차기본요금");
+                textView8.setText((CharSequence)fee.get(number));
+                textView9.setText("주차기본시간");
+                textView10.setText((CharSequence)time_p.get(number));
+                textView11.setText("소재지도로명주소");
+                textView12.setText((CharSequence)address.get(number));
 
                 runTMapTapiT();
             }

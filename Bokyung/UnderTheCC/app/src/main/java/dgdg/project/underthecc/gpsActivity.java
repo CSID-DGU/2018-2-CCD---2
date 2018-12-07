@@ -345,23 +345,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 tMapCircle.setAreaAlpha(50);
                 tmap.addTMapCircle("circle1", tMapCircle);
                 tmap.setIconVisibility(true);
-
-                Log.d(TAG, "onLocationChanged : geocoding");
-                TMapData tMapData = new TMapData();
-                try {
-                    tMapData.convertGpsToAddress(tMapPoint.getLatitude(), tMapPoint.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
-
-                        @Override
-                        public void onConvertToGPSToAddress(String addr) {
-                            TextView textView;
-                            textView = findViewById(R.id.textView);
-                            textView.setText(addr);
-                        }
-                    });
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         }
 
