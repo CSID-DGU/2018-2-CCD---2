@@ -14,9 +14,9 @@ import com.skt.Tmap.TMapTapi;
 
 import java.util.ArrayList;
 
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private static final String TAG = "랄라";
+
+    private static final String TAG = "MainActivity_underthec";
     private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
     private TMapTapi tMapTapi;
 
@@ -25,17 +25,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button_gps=(ImageButton)findViewById(R.id.imageButton1);
-        button_park=(ImageButton)findViewById(R.id.imageButton2);
+
+        button_gps=(ImageButton)findViewById(R.id.button_gps);
+        button_park=(ImageButton)findViewById(R.id.button_park);
 
         button_gps.setOnClickListener(this);
         button_park.setOnClickListener(this);
-
-        showDialogForRecommendation("앱의 원활한 사용을 위해 Tmap 앱을 설치를 권장합니다!");
+        runTMapTapiT();
     }
-
 
     private void showDialogForRecommendation(String msg) {
         Log.d(TAG, "showDialogForRecommendation");
@@ -46,17 +47,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setCancelable(false);
         builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                Log.d(TAG, "showDialogForRecommendation : 취소 버튼 누름");
 
             }
         });
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                runTMapTapiT();
+                Log.d(TAG, "showDialogForRecommendation : 확인 버튼 누름");
+                ArrayList<String> _ar = tMapTapi.getTMapDownUrl();
+                if (_ar != null && _ar.size() > 0) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(_ar.get(0)));
+                    startActivity(intent);
+                }
             }
         });
         builder.create().show();
     }
 
+    public void runTMapTapiT() {
+        Log.d(TAG, "runTMapTapiT 호출됨");
+        tMapTapi = new TMapTapi(this);
+        tMapTapi.setSKTMapAuthentication(TMAP_API_KEY);// tmap api인증키 받기
+
+        //인증 결과에 대한 인터페이스 함수 추가
+        tMapTapi.setOnAuthenticationListener(new TMapTapi.OnAuthenticationListenerCallback() {
+            @Override
+            public void SKTMapApikeySucceed() { //ApiKey 인증 성공 시 호출된다.
+                Log.d(TAG, "runTMapTapiT : 성공");
+
+                boolean isTmapApp = tMapTapi.isTmapApplicationInstalled();
+                Log.d(TAG, "runTMapTapiT : 티맵 설치 여부 - " + isTmapApp);
+                if (!isTmapApp) {
+                    showDialogForRecommendation("앱의 원활한 사용을 위해 Tmap 앱을 설치를 권장합니다!");
+                }else{}
+            }
+            @Override
+            public void SKTMapApikeyFailed(String s) { //ApiKey 인증 실패 시 호출된다.
+                Log.d(TAG, "runTMapTapiT : 실패" + s);
+            }
+        });
+    }
 
     @Override
     public void onClick(View v) {
@@ -68,37 +98,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(this, parkingActivity.class);
             startActivity(intent);
         }
-    }
-
-
-    public void runTMapTapiT() {
-        tMapTapi = new TMapTapi(this);
-        tMapTapi.setSKTMapAuthentication(TMAP_API_KEY);// tmap api인증키 받기
-
-        //인증 결과에 대한 인터페이스 함수 추가
-        tMapTapi.setOnAuthenticationListener(new TMapTapi.OnAuthenticationListenerCallback() {
-            @Override
-            public void SKTMapApikeySucceed() { //ApiKey 인증 성공 시 호출된다.
-                Log.d(TAG, "성공");
-
-                boolean isTmapApp = tMapTapi.isTmapApplicationInstalled();
-                Log.d(TAG, "" + isTmapApp);
-                if (!isTmapApp) {
-                    ArrayList<String> _ar = tMapTapi.getTMapDownUrl();
-                    Log.d(TAG, "" + _ar);
-                    if (_ar != null && _ar.size() > 0) {
-                        Log.d(TAG,"_ar.size() : "+ _ar.size());
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(_ar.get(0)));
-                        startActivity(intent);
-                    }
-                } else {
-                    Log.d(TAG, "tMap앱 설치되어있음");
-                }
-            }
-            @Override
-            public void SKTMapApikeyFailed(String s) { //ApiKey 인증 실패 시 호출된다.
-                Log.d(TAG, "실패" + s);
-            }
-        });
     }
 }

@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class parkingMapActivity extends ABActivity{
+public class parkingMapActivity extends ABActivity implements View.OnClickListener{
 
     private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
     private static final String TAG = "ParkingMapActivity";
@@ -45,7 +47,6 @@ public class parkingMapActivity extends ABActivity{
     final ArrayList time_p = new ArrayList();
     final ArrayList address = new ArrayList();
 
-
     private TMapView tmap;
     public String data;
     float x;
@@ -54,9 +55,10 @@ public class parkingMapActivity extends ABActivity{
 
     TMapTapi tMapTapi;
     TMapMarkerItem markerItem_p;
+    TextView textView;
+    Button button_navi;
     String result="";
     String file="서울특별시_주차장정보.xml";
-    TextView textView;
     Double longitude;
     Double latitude;
 
@@ -69,9 +71,10 @@ public class parkingMapActivity extends ABActivity{
         data = intent.getStringExtra("address_value");
 
         textView = findViewById(R.id.textView);
+        button_navi = findViewById(R.id.button_navi);
+        button_navi.setOnClickListener(this);
 
         RelativeLayout RelativeLayoutTmap = findViewById(R.id.mapview_p);
-
         tmap = new TMapView(this);
         tmap.setSKTMapApiKey(TMAP_API_KEY);
         RelativeLayoutTmap.addView(tmap);
@@ -211,9 +214,6 @@ public class parkingMapActivity extends ABActivity{
         xmlPassing(fee, 8);
         xmlPassing(time_p, 9);
         xmlPassing(address, 10);
-        Log.d(TAG, "" + PointWido_p.size() +"  "+ PointKyungdo_p.size() + "  "+ Name_p.size() + "  "+ Phone_p.size()+ "  "+ parkingClass.size()
-                + "  "+ feeInfo.size()+ "  "+ date_p.size()+ "  "+ date_p.size() +  "  "+ fee.size()+ "  "+ time_p.size()+ "  "+ address.size());
-
 
         tmap.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
             @Override
@@ -229,12 +229,11 @@ public class parkingMapActivity extends ABActivity{
                         Log.d(TAG, "주차장 아이콘 클릭 : " + s + "   " + i + "   " + Name_p.get(i));
                     }
                 }
-                textView.setText(Name_p.get(number) + "\n"+ Phone_p.get(number)+ "\n"+ parkingClass.get(number)
-                        + "\n"+ feeInfo.get(number)+ "\n"+ date_p.get(number)+ "\n"+ date_p.get(number) +  "\n"+ fee.get(number)+ "\n"+ time_p.size()+ "\n"+ address.get(number));
-
-                runTMapTapiT();
+                textView.setText(Name_p.get(number) + "\n"+ Phone_p.get(number)+ "\n"+ parkingClass.get(number) + "\n"+ feeInfo.get(number)+
+                        "\n"+ date_p.get(number)+ "\n" + date_p.get(number) +  "\n"+ fee.get(number)+ "\n"+ time_p.get(number)+ "\n"+ address.get(number));
             }
         });
+
 
         for(int i=0; i<PointWido_p.size(); i++){
             markerItem_p = new TMapMarkerItem();
@@ -255,6 +254,12 @@ public class parkingMapActivity extends ABActivity{
             markerItem_p.setCalloutSubTitle(p_address);
         }
         super.onStart();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v == button_navi)
+            runTMapTapiT();
     }
 
     public void runTMapTapiT() {

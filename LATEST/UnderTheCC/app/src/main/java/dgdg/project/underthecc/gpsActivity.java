@@ -62,7 +62,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     ArrayList mPendingIntentList;
     String intentKey = "CCTVProximity";
     String result="";
-    String cctvFile="서울특별시_중구_CCTV_20181101.xml";
+    String cctvFile="서울 CCTV.xml";
     String parkingFile="서울특별시_주차장정보.xml";
 
     private static final String TAG = "GpsActivity";
@@ -128,7 +128,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 String kyungdo = (String) PointKyungdo.get(i);
                 double dwido = Double.valueOf(wido);
                 double dkyungdo = Double.valueOf(kyungdo);
-                register(i,dwido, dkyungdo,600,-1);
+                register(i,dwido, dkyungdo,150,-1);
                 Log.d(TAG, "Background: register 등록 번호 " + i);
             }
             super.run();
@@ -184,18 +184,9 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 }else if(eventType==XmlPullParser.TEXT){
                     if(bSet){
                         String data = xpp.getText();
-                        boolean isPoint = false;
-                        for(int j=0; j<pointList.size(); j++) {
-                            if (data.equals(pointList.get(j))) {
-                                isPoint = true;
-                                break;
-                            }
-                        }
-                        if (!isPoint)
-                            pointList.add(data);
+                        pointList.add(data);
                     }
                     bSet = false;
-
                 }else if(eventType==XmlPullParser.END_TAG);
                 eventType=xpp.next();
             }
@@ -231,7 +222,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                     tmap.addMarkerItem("markerItem"+i, markerItem1);
 
                     markerItem1.setCanShowCallout(true);
-                    markerItem1.setCalloutTitle(i + "   위도 : " + wido + "경도 : " + kyungdo);
+                    markerItem1.setCalloutTitle("위도 : " + wido + "경도 : " + kyungdo);
                 }
 
             }else {
