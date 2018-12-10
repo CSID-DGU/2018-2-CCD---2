@@ -1,35 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".gpsActivity"
     android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/mapview_p"
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="350dp" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="80dp">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center_horizontal"
-            android:textSize="20sp" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView1"
+                    style="@style/CustomTextView"
+                    android:text="주차장구분"/>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/CustomTextView" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/CustomTextView"
+                    android:text="요금정보"/>
+
+                <TextView
+                    android:id="@+id/textView4"
+                    style="@style/CustomTextView" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/CustomTextView"
+                    android:text="운영요일"/>
+
+                <TextView
+                    android:id="@+id/textView6"
+                    style="@style/CustomTextView" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView7"
+                    style="@style/CustomTextView"
+                    android:text="주차기본요금"/>
+
+                <TextView
+                    android:id="@+id/textView8"
+                    style="@style/CustomTextView" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    style="@style/CustomTextView"
+                    android:text="주차기본시간"/>
+
+                <TextView
+                    android:id="@+id/textView10"
+                    style="@style/CustomTextView" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView11"
+                    style="@style/CustomTextView"
+                    android:text="소재지도로명주소"/>
+
+                <TextView
+                    android:id="@+id/textView12"
+                    style="@style/CustomTextView" />
+
+            </LinearLayout>
+        </LinearLayout>
+
     </ScrollView>
 
-    <Button
+    <ImageButton
         android:id="@+id/button_navi"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
+        android:background="@android:color/transparent"
         android:paddingTop="0dp"
-        android:text="경로 안내 시작" />
+        app:srcCompat="@drawable/tmapb2" />
 
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -55,12 +57,24 @@ public class parkingMapActivity extends ABActivity implements View.OnClickListen
 
     TMapTapi tMapTapi;
     TMapMarkerItem markerItem_p;
-    TextView textView;
-    Button button_navi;
+    ImageButton button_navi;
     String result="";
     String file="서울특별시_주차장정보.xml";
     Double longitude;
     Double latitude;
+
+    TextView textView1;
+    TextView textView2;
+    TextView textView3;
+    TextView textView4;
+    TextView textView5;
+    TextView textView6;
+    TextView textView7;
+    TextView textView8;
+    TextView textView9;
+    TextView textView10;
+    TextView textView11;
+    TextView textView12;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +84,25 @@ public class parkingMapActivity extends ABActivity implements View.OnClickListen
         Intent intent = getIntent();
         data = intent.getStringExtra("address_value");
 
-        textView = findViewById(R.id.textView);
+        textView1 = findViewById(R.id.textView1);
+        textView1.setPaintFlags(textView1.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        textView2 = findViewById(R.id.textView2);
+        textView3 = findViewById(R.id.textView3);
+        textView3.setPaintFlags(textView3.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        textView4 = findViewById(R.id.textView4);
+        textView5 = findViewById(R.id.textView5);
+        textView5.setPaintFlags(textView5.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        textView6 = findViewById(R.id.textView6);
+        textView7 = findViewById(R.id.textView7);
+        textView7.setPaintFlags(textView7.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        textView8 = findViewById(R.id.textView8);
+        textView9 = findViewById(R.id.textView9);
+        textView9.setPaintFlags(textView9.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        textView10 = findViewById(R.id.textView10);
+        textView11 = findViewById(R.id.textView11);
+        textView11.setPaintFlags(textView11.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        textView12 = findViewById(R.id.textView12);
+
         button_navi = findViewById(R.id.button_navi);
         button_navi.setOnClickListener(this);
 
@@ -202,7 +234,7 @@ public class parkingMapActivity extends ABActivity implements View.OnClickListen
     }
 
     protected void onStart() {
-        Log.d(TAG, "onStart: xml 파싱준비");
+        Log.d(TAG, "onStart: xml 파싱");
 
         xmlPassing(PointWido_p, 1);
         xmlPassing(PointKyungdo_p, 2);
@@ -229,8 +261,13 @@ public class parkingMapActivity extends ABActivity implements View.OnClickListen
                         Log.d(TAG, "주차장 아이콘 클릭 : " + s + "   " + i + "   " + Name_p.get(i));
                     }
                 }
-                textView.setText(Name_p.get(number) + "\n"+ Phone_p.get(number)+ "\n"+ parkingClass.get(number) + "\n"+ feeInfo.get(number)+
-                        "\n"+ date_p.get(number)+ "\n" + date_p.get(number) +  "\n"+ fee.get(number)+ "\n"+ time_p.get(number)+ "\n"+ address.get(number));
+                textView2.setText((CharSequence) parkingClass.get(number));
+                textView4.setText((CharSequence)feeInfo.get(number));
+                textView6.setText((CharSequence)date_p.get(number));
+                textView8.setText((CharSequence)fee.get(number) + "원");
+                textView10.setText((CharSequence)time_p.get(number) + "시간");
+                textView12.setText((CharSequence)address.get(number));
+
             }
         });
 
@@ -247,7 +284,7 @@ public class parkingMapActivity extends ABActivity implements View.OnClickListen
             markerItem_p.setTMapPoint(p_tmapPoint);
             tmap.addMarkerItem("markerItem_p"+i, markerItem_p);
 
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.tmapicon);
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.info12);
             markerItem_p.setCanShowCallout(true);
             markerItem_p.setCalloutRightButtonImage(bitmap);
             markerItem_p.setCalloutTitle(p_name);
