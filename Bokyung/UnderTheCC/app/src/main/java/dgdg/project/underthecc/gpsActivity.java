@@ -43,7 +43,6 @@ import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
-import com.skt.Tmap.TMapTapi;
 import com.skt.Tmap.TMapView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -63,7 +62,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     ArrayList mPendingIntentList;
     String intentKey = "CCTVProximity";
     String result="";
-    String cctvFile="서울 CCTV.xml";
+    String cctvFile="서울특별시_중구_CCTV_20181101.xml";
     String parkingFile="서울특별시_주차장정보.xml";
 
     private static final String TAG = "GpsActivity";
@@ -74,8 +73,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     boolean bcctv = false; //화면에 cctv 정보 나오지 않는 상태
     boolean bparking = false; //화면에 주차장 정보 나오지 않는 상태
 
-    TMapTapi tMapTapi;
-
     private TMapView tmap;
     private LocationManager mLocationManager;
     private IntentReceiver mIntentReceiver;
@@ -85,13 +82,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
     final ArrayList PointKyungdo = new ArrayList ();
     final ArrayList PointWido_p = new ArrayList();
     final ArrayList PointKyungdo_p = new ArrayList();
-    final ArrayList Name_p = new ArrayList();
-    final ArrayList Phone_p = new ArrayList();
-
-    float x;
-    float y;
-    int number;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,8 +95,8 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mPendingIntentList = new ArrayList();
 
-        button_cctv = findViewById(R.id.cctvBu);
-        button_parking= findViewById(R.id.parkingBu);
+        button_cctv = (ImageButton)findViewById(R.id.cctvBu);
+        button_parking=(ImageButton)findViewById(R.id.parkingBu);
 
         button_cctv.setOnClickListener(this);
         button_parking.setOnClickListener(this);
@@ -130,11 +120,9 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
             xmlPassing(PointKyungdo, 2, cctvFile); // CCTV xml에서 경도정보 배열에 저장
             xmlPassing(PointWido_p,1, parkingFile); // 주차장 xml에서 위도정보 배열에 저장
             xmlPassing(PointKyungdo_p,2, parkingFile); // 주차장 xml에서 경도정보 배열에 저장
-            xmlPassing(Name_p, 3, parkingFile);
-            xmlPassing(Phone_p, 4, parkingFile);
 
             Log.d(TAG, "Background : register 호출");
-            for(int i=1; i<100; i++){
+            for(int i=1; i<PointWido.size(); i++){
                 // 좌표 인텐트로 지정
                 String wido = (String) PointWido.get(i);
                 String kyungdo = (String) PointKyungdo.get(i);
@@ -158,22 +146,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         tmap.setSKTMapApiKey(TMAP_API_KEY);
         RelativeLayoutTmap.addView(tmap);
 
-        tmap.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
-            @Override
-            public void onCalloutRightButton(TMapMarkerItem markerItem) {
-                Log.d(TAG, "주차장 아이콘 클릭 : runTMapTapiT()");
-                x = (float)markerItem.latitude;
-                y = (float)markerItem.longitude;
-                for(int i =0; i<PointWido_p.size(); i++){
-                    String s = (String)PointWido_p.get(i);
-                    Float f = Float.parseFloat(s);
-                    if(x == f) {
-                        number = i;
-                        Log.d(TAG, "주차장 아이콘 클릭 : " + s + "   " + i + "   " + Name_p.get(i));
-                    }
-                }runTMapTapiT();
-            }
-        });
         super.onStart();
     }
 
@@ -208,21 +180,22 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                             if(tag_name.equals("경도") )
                                 bSet=true;
                             break;
-                        case 3:
-                            if(tag_name.equals("주차장명") )
-                                bSet=true;
-                            break;
-                        case 4:
-                            if(tag_name.equals("전화번호") )
-                                bSet=true;
-                            break;
                     }
                 }else if(eventType==XmlPullParser.TEXT){
                     if(bSet){
                         String data = xpp.getText();
-                        pointList.add(data);
+                        boolean isPoint = false;
+                        for(int j=0; j<pointList.size(); j++) {
+                            if (data.equals(pointList.get(j))) {
+                                isPoint = true;
+                                break;
+                            }
+                        }
+                        if (!isPoint)
+                            pointList.add(data);
                     }
                     bSet = false;
+
                 }else if(eventType==XmlPullParser.END_TAG);
                 eventType=xpp.next();
             }
@@ -256,9 +229,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                     markerItem1.setTMapPoint(tmapPoint);
                     //지도에 마커 추가
                     tmap.addMarkerItem("markerItem"+i, markerItem1);
-
-                    markerItem1.setCanShowCallout(true);
-                    markerItem1.setCalloutTitle("위도 : " + wido + "경도 : " + kyungdo);
                 }
 
             }else {
@@ -268,6 +238,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 for (int i = 0; i < PointWido.size(); i++) {
                     tmap.removeMarkerItem("markerItem" + i);
                 }
+
             }
         }
 
@@ -284,20 +255,14 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                     String p_kyungdo = (String) PointKyungdo_p.get(i);
                     double p_dwido = Double.valueOf(p_wido);
                     double p_dkyungdo = Double.valueOf(p_kyungdo);
-                    String p_name = (String)Name_p.get(i);
-                    String p_address = (String)Phone_p.get(i);
                     TMapPoint p_tmapPoint = new TMapPoint(p_dwido, p_dkyungdo);
                     Bitmap icon_p = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
                     markerItem_p.setIcon(icon_p); // 마커 아이콘 지정
                     markerItem_p.setTMapPoint(p_tmapPoint);
                     //지도에 마커 추가
                     tmap.addMarkerItem("markerItem_p"+i, markerItem_p);
-
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.info12);
                     markerItem_p.setCanShowCallout(true);
-                    markerItem_p.setCalloutRightButtonImage(bitmap);
-                    markerItem_p.setCalloutTitle(p_name);
-                    markerItem_p.setCalloutSubTitle(p_address);
+                    markerItem_p.setCalloutTitle("위도 : " + p_wido + "경도 : " + p_kyungdo);
                 }
             }else{
                 Log.d(TAG, "onClick: parking버튼, 화면에 안 보이게 함");
@@ -310,34 +275,6 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         }
     }
 
-    public void runTMapTapiT() {
-        tMapTapi = new TMapTapi(this);
-
-        boolean isTmapApp = tMapTapi.isTmapApplicationInstalled();
-
-        if(!isTmapApp){
-            AlertDialog.Builder builder = new AlertDialog.Builder(gpsActivity.this);
-            builder.setTitle("알림");
-            builder.setMessage("Tmap 앱을 설치해주세요");
-            builder.setCancelable(false);
-            builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                }
-            });
-            builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    ArrayList<String> _ar = tMapTapi.getTMapDownUrl();
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(_ar.get(0)));
-                    startActivity(intent);
-                }
-            });
-            builder.create().show();
-
-        }else {
-            String naviName = (String)Name_p.get(number);
-            tMapTapi.invokeRoute(naviName, y, x);
-        }
-    }
 
     @Override
     public void onResume() {
@@ -348,6 +285,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         if (!mRequestingLocationUpdates){
             startLocationUpdates();
         }
+
 
         //앱 정보에서 퍼미션을 허가했는지를 다시 검사
         if (askPermissionOnceAgain) {
@@ -400,7 +338,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
                 TMapCircle tMapCircle = new TMapCircle();
                 tMapCircle.setCenterPoint(tMapPoint);
-                tMapCircle.setRadius(600);
+                tMapCircle.setRadius(150);
                 tMapCircle.setCircleWidth(0);
                 tMapCircle.setLineColor(Color.TRANSPARENT);
                 tMapCircle.setAreaColor(Color.RED);
@@ -434,6 +372,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
             return;
         }
+        Log.d(TAG, "register 6");
         // 목표지점 동록을 위해 addProximityAlert 메소드 이용
         mLocationManager.addProximityAlert(latitude, longitude, radius, expiration, intent);
         mPendingIntentList.add(intent);
@@ -466,17 +405,15 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 int id = intent.getIntExtra("id", 0);
                 double latitude = intent.getDoubleExtra("latitude", 0.0D);
                 double longitude = intent.getDoubleExtra("longitude", 0.0D);
-                Toast.makeText(context, "CCTV 단속 구역입니다." + id + ", " + latitude, Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "토스트가 울려따  " + id);
-
-                //Toast.makeText(context, "CCTV 단속 구역입니다. 차를 이동해주세요!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "CCTV 단속 구역입니다." + id + ", " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "CCTV 단속 구역입니다. 차를 이동해주세요!", Toast.LENGTH_SHORT).show();
                 //진동 알림
-                //Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-                //vib.vibrate(500);
+                Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+                vib.vibrate(500);
                 //Beep 알림음
-                //Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                //Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                //ringtone.play();
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                ringtone.play();
             }
         }
         public Intent getLastReceivedIntent() {
