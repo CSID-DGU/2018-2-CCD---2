@@ -1,6 +1,5 @@
 package dgdg.project.underthecc;
 
-
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -97,6 +96,10 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
 
         button_cctv.setOnClickListener(this);
         button_parking.setOnClickListener(this);
+
+        for(int i = 0; i<2090; i++){
+            distance.add(null);
+        }
 
         Log.d(TAG, "onCreate: xml 파일 파싱");
         xmlPassing(PointWido, 1, cctvFile); // CCTV xml에서 위도정보 배열에 저장
@@ -360,7 +363,7 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
                 tmap.addTMapCircle("circle1", tMapCircle);
                 tmap.setIconVisibility(true);
 
-                calculateDistance();
+                calculateDistance(latitude, longitude);
 
                 for(int i=0; i< PointWido.size(); i++) {
                     double dDistance = (double) distance.get(i);
@@ -385,15 +388,15 @@ public class gpsActivity extends ABActivity implements View.OnClickListener{
         public void onStatusChanged(String provider, int status, Bundle extras) { }
     };
 
-    private void calculateDistance(){
+    private void calculateDistance(double lat, double lon){
         for (int i = 0; i < PointWido.size(); i++) {
             // 좌표 인텐트로 지정
             String wido = (String) PointWido.get(i);
             String kyungdo = (String) PointKyungdo.get(i);
             double dwido = Double.valueOf(wido);
             double dkyungdo = Double.valueOf(kyungdo);
-            double rDistance = distance(dwido, dkyungdo, latitude, longitude);
-            distance.add(rDistance);
+            double rDistance = distance(dwido, dkyungdo, lat, lon);
+            distance.set(i, rDistance);
         }
     }
 
