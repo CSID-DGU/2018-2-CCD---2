@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -211,7 +210,7 @@ public class parkingMapActivity extends ABActivity implements View.OnClickListen
                                 bSet=true;
                             break;
                         case 10:
-                            if(tag_name.equals("소재지도로명주소") )
+                            if(tag_name.equals("소재지지번주소") )
                                 bSet=true;
                             break;
                     }

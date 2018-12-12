@@ -11,7 +11,8 @@
         android:id="@+id/mapview_p"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="8"/>
+        android:layout_marginBottom="10dp"
+        android:layout_weight="9"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,10 +32,12 @@
                 <TextView
                     android:id="@+id/textView1"
                     style="@style/CustomTextView"
+                    android:layout_weight="2.5"
                     android:text="주차장구분"/>
 
                 <TextView
                     android:id="@+id/textView2"
+                    android:layout_weight="1"
                     style="@style/CustomTextView" />
 
             </LinearLayout>
@@ -47,10 +50,12 @@
                 <TextView
                     android:id="@+id/textView3"
                     style="@style/CustomTextView"
+                    android:layout_weight="2.5"
                     android:text="요금정보"/>
 
                 <TextView
                     android:id="@+id/textView4"
+                    android:layout_weight="1"
                     style="@style/CustomTextView" />
 
             </LinearLayout>
@@ -63,10 +68,13 @@
                 <TextView
                     android:id="@+id/textView5"
                     style="@style/CustomTextView"
+                    android:layout_weight="2.5"
                     android:text="운영요일"/>
 
                 <TextView
                     android:id="@+id/textView6"
+                    android:layout_weight="1"
+                    android:gravity="left"
                     style="@style/CustomTextView" />
 
             </LinearLayout>
@@ -79,10 +87,12 @@
                 <TextView
                     android:id="@+id/textView7"
                     style="@style/CustomTextView"
+                    android:layout_weight="2.5"
                     android:text="주차기본요금"/>
 
                 <TextView
                     android:id="@+id/textView8"
+                    android:layout_weight="1"
                     style="@style/CustomTextView" />
 
             </LinearLayout>
@@ -95,10 +105,12 @@
                 <TextView
                     android:id="@+id/textView9"
                     style="@style/CustomTextView"
+                    android:layout_weight="2.5"
                     android:text="주차기본시간"/>
 
                 <TextView
                     android:id="@+id/textView10"
+                    android:layout_weight="1"
                     style="@style/CustomTextView" />
 
             </LinearLayout>
@@ -111,10 +123,12 @@
                 <TextView
                     android:id="@+id/textView11"
                     style="@style/CustomTextView"
-                    android:text="소재지도로명주소"/>
+                    android:layout_weight="2.5"
+                    android:text="주소"/>
 
                 <TextView
                     android:id="@+id/textView12"
+                    android:layout_weight="1"
                     style="@style/CustomTextView" />
 
             </LinearLayout>
