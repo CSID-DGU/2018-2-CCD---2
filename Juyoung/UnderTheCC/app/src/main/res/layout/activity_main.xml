@@ -20,7 +20,7 @@
         android:src="@drawable/utc" />
 
     <ImageButton
-        android:id="@+id/imageButton1"
+        android:id="@+id/button_gps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -33,7 +33,7 @@
         app:srcCompat="@drawable/menu1" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/button_park"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -44,6 +44,5 @@
         android:contentDescription="@string/description"
         android:onClick="onClick"
         app:srcCompat="@drawable/menu2" />
-
 
 </RelativeLayout>

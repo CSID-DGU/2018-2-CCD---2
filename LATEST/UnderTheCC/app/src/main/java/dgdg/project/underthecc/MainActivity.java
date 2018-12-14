@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private static final String TAG = "MainActivity_underthec";
+    private static final String TAG = "MainActivity_UTC";
     ImageButton button_gps;
     ImageButton button_park;
 

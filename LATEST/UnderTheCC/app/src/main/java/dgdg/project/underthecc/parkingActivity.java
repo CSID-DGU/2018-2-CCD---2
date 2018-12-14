@@ -18,18 +18,15 @@ public class parkingActivity extends ABActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking);
 
-        // WebView 초기화
         init_webView();
         handler = new Handler();
 
     }
 
-    public void init_webView() { //WebView 설정하고 JavaScript 허용, 크롬, 웹뷰 url loaod.php 파일주소 설정
+    public void init_webView() {
         webView = (WebView) findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
-        // JavaScript의 window.open 허용
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        // JavaScript이벤트에 대응할 함수를 정의 한 클래스를 붙여줌
         webView.addJavascriptInterface(new AndroidBridge(), "TestApp");
         webView.setWebChromeClient(new WebChromeClient());
         webView.loadUrl("http://underthecc.ivyro.net/index.php");
@@ -42,7 +39,7 @@ public class parkingActivity extends ABActivity {
                 @Override
                 public void run() {
                     address = String.format("(%s) %s %s", arg1, arg2, arg3);
-                    // WebView를 초기화 하지않으면 재사용할 수 없음
+                    // WebView를 초기화 하지않으면 재사용 불가
                     nextActivity();
                     init_webView();
                 }
