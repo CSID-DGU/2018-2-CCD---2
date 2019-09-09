@@ -54,7 +54,7 @@ import java.util.ArrayList;
 
 public class gpsActivity extends ABActivity implements View.OnClickListener{
 
-    private final String TMAP_API_KEY = "39b31a17-1bb2-4874-af9e-e0ebd629e1f7";
+    private final String TMAP_API_KEY = "TMAP_KEY";
 
     ImageButton button_cctv;
     ImageButton button_parking;
