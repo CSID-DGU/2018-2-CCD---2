@@ -40,7 +40,7 @@ public class parkingActivity extends ABActivity {
         // web client 를 chrome 으로 설정
         webView.setWebChromeClient(new WebChromeClient());
         // webview url load. php 파일 주소
-        webView.loadUrl("http://underthecc.ivyro.net/index.php");
+        webView.loadUrl("url");
     }
 
 
